@@ -2,9 +2,9 @@
 //namespace testShapes;
 
 include_once ('class/Circle.php');
-include_once ('class/Cylinder.php');
 include_once ('class/Rectangle.php');
 include_once ('class/Square.php');
+include_once ('class/Cylinder.php');
 
 $circle = new Circle('Circle 01', 3);
 echo 'Circle area: ' . $circle->calculateArea() . '<br />';
