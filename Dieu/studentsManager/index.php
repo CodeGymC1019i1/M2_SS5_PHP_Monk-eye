@@ -65,6 +65,7 @@ if (isset($_GET["submit"])) {
                        aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit" name="submit">Search</button>
             </form>
+            <?php echo  $_SESSION['username'] ?> <a href="src/logout.php" > : Logout</a>
         </div>
     </nav>
     <div class="row">
