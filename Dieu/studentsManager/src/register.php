@@ -1,22 +1,18 @@
 <?php
-session_start();
-include_once "../class/Student.php";
-include_once "../class/StudentManager.php";
-include_once "../class/User.php";
-include_once "../class/UserManager.php";
-
-$path = "../user.json";
+use Controller\User;
+use Controller\UserManager;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-$listUser = new \Controller\UserManager($path);
-$username = $_POST['username'];
-$password = $_POST['password'];
-if (empty($username) || empty($password)) {
-    echo "<script type='text/javascript'>alert('login failed! username and password is not empty')</script>";
-} else {
-    $_SESSION['username'] = $username;
-    $listUser->checkLogin($username, $password);
-}
+    include_once "../class/User.php";
+    include_once "../class/UserManager.php";
+    $path = "../user.json";
 
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $email = $_POST['email'];
+    $user = new User($username, $password, $email);
+    $listUser = new UserManager($path);
+    $listUser->add($user);
+    header("Location: login.php");
 }
 
 ?>
@@ -43,7 +39,7 @@ if (empty($username) || empty($password)) {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../index.php">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
@@ -71,21 +67,23 @@ if (empty($username) || empty($password)) {
         </div>
     </nav>
 
+
     <form method="post">
         <div class="form-group">
             <label>Username</label>
             <input type="text" class="form-control" name="username">
         </div>
         <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control"  name="email" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
             <input type="password" class="form-control" name="password">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-outline-primary"><a href="register.php">Create</a></button>
 
+        <button type="submit" class="btn btn-primary">Creat</button>
     </form>
-
-
 </div>
 
 

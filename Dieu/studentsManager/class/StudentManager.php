@@ -1,21 +1,16 @@
 <?php
 namespace Controller;
+include_once "Manager.php";
 
-class StudentManager
+class StudentManager extends Manager
 {
-    public $pathFile;
-    public function __construct($pathFile)
-    {
-        $this->pathFile = $pathFile;
-    }
+
 
     public function add($student)
     {
         $listStudent = $this->readFile();
 
         $data = [
-            'username' => $student->username,
-            'password' => $student->password,
             'name' => $student->name,
             'age' => $student->age,
             'address' => $student->address,
@@ -34,21 +29,6 @@ class StudentManager
         $this->saveDataToFile($students);
     }
 
-    public function readFile()
-    {
-        $dataJson = file_get_contents($this->pathFile);
-        return json_decode($dataJson, true);
-    }
-
-    public function saveDataToFile($students)
-    {
-        try {
-            $dataJson = json_encode($students);
-            file_put_contents($this->pathFile, $dataJson);
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        }
-    }
 
     public function getList()
     {
@@ -56,8 +36,7 @@ class StudentManager
 
         $arr = [];
         foreach ($data as $item) {
-            $student = new Student($item['username'],
-                                    $item['password'],
+            $student = new Student(
                                     $item['name'],
                                     $item['age'],
                                     $item['address'],
@@ -74,8 +53,7 @@ class StudentManager
     {
         $data = $this->readFile();
         if (array_key_exists($index, $data)) {
-            $student = new Student($data[$index]['username'],
-                $data[$index]['password'],
+            $student = new Student(
                 $data[$index]['name'],
                 $data[$index]['age'],
                 $data[$index]['address'],
@@ -90,8 +68,6 @@ class StudentManager
         $listStudent = $this->readFile();
 
         $data = [
-            'username' => $student->username,
-            'password' => $student->password,
             'name' => $student->name,
             'age' => $student->age,
             'address' => $student->address,

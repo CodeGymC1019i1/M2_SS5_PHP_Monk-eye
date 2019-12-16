@@ -2,18 +2,23 @@
 
 use Controller\Student;
 use Controller\StudentManager;
+use Controller\GroupManager;
+use Controller\Group;
 
 include_once "../class/Student.php";
 include_once "../class/StudentManager.php";
-
+include_once "../class/Group.php";
+include_once "../class/GroupManager.php";
+$path = "../group.json";
+$listGroup = new GroupManager($path);
+$groups = $listGroup->getList();
 $index = (int)$_GET['index'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $studentManager  =  new \Controller\StudentManager("../data.json");
     $student = $studentManager->findById($index);
 } else {
-    $username=$_POST['username'];
-    $password = $_POST['username'];
+
     $name = $_POST['name'];
     $age = $_POST['age'];
     $address = $_POST['address'];
@@ -21,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     $pathFile = "../data.json";
 
-    $student = new Student($username,$password,$name, $age, $address, $group);
+    $student = new Student($name, $age, $address, $group);
     $studentManager  = new StudentManager($pathFile);
     $studentManager->edit($student, $index);
 
@@ -55,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="../index.php">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Link</a>
@@ -86,14 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         <div class="col-12">
             <h1>Edit Student</h1>
             <form method="post">
-                <div class="form-group" >
-                    <label >Username</label>
-                    <input type="text" class="form-control" name="username" value="<?php echo $student->username ?>">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" name="password"value="<?php echo $student->password ?>">
-                </div>
+
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" class="form-control" name="name" value="<?php echo $student->name ?>">
@@ -109,26 +107,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 <div class="form-group">
                     <label>Group</label>
                     <select class="form-control" name="group">
-                        <option value="C0919K1"
-                            <?php if ($student->group == "C0919K1"): ?>
-                                selected
-                            <?php endif; ?>
-                        >C0919K1</option>
-                        <option value="C0919I1"
-                            <?php if ($student->group == "C0919I1"): ?>
-                                selected
-                            <?php endif; ?>
-                        >C0919I1</option>
-                        <option value="C1019K1"
-                            <?php if ($student->group == "C1019K1"): ?>
-                                selected
-                            <?php endif; ?>
-                        >C1019K1</option>
-                        <option value="C1019I1"
-                                <?php if ($student->group == "C1019I1"): ?>
-                                selected
-                        <?php endif; ?>
-                        >C1019I1</option>
+                        <?php foreach ($groups as $group): ?>
+                            <option value="<?php echo $group->nameGroup ?>"
+                                <?php if ($student->group == $group->nameGroup): ?>
+                                    selected
+                                <?php endif; ?>
+                            ><?php echo $group->nameGroup ?></option>
+                        <?php endforeach;?>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -137,8 +122,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 </html>

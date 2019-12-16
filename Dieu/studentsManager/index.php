@@ -72,6 +72,8 @@ if (isset($_GET["submit"])) {
         <div class="col-12 page-title mb-2">
             <h1>Users</h1>
             <button type="button" class="btn btn-outline-primary" <?php if($_SESSION['username']!='admin'): ?>hidden<?php endif?>><a href="src/add.php">Create</a></button>
+            <button type="button" class="btn btn-outline-primary" <?php if($_SESSION['username']!='admin'): ?>hidden<?php endif?>><a href="src/editGroup.php">Edit Group</a></button>
+
         </div>
         <div class="col-12 col-md-12">
             <table class="table">
@@ -96,12 +98,12 @@ if (isset($_GET["submit"])) {
                         <td><?php echo $student->group ?></td>
                         <td><a href="src/delete.php?index=<?php echo $key ?>"
                                onclick="return confirm('Ban chac chan muon xoa khong')" class="btn btn-danger"
-                               <?php if ($_SESSION['username'] != 'admin'&&$_SESSION['username']!= $student->username): ?>
+                               <?php if ($_SESSION['username'] != 'admin'): ?>
                                    hidden
                                <?php endif ?>
                             >Delete</a></td>
                         <td><a href="src/edit.php?index=<?php echo $key ?>" class="btn btn-primary"
-                                <?php if ($_SESSION['username'] != 'admin'&&$_SESSION['username']!= $student->username): ?>
+                                <?php if ($_SESSION['username'] != 'admin'): ?>
                                     hidden
                                 <?php endif ?>>Edit</a></td>
                     </tr>

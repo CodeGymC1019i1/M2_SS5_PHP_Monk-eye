@@ -1,23 +1,19 @@
 <?php
-session_start();
-include_once "../class/Student.php";
-include_once "../class/StudentManager.php";
-include_once "../class/User.php";
-include_once "../class/UserManager.php";
+use Controller\Group;
+use Controller\GroupManager;
+include_once "../class/Group.php";
+include_once "../class/GroupManager.php";
+$path = "../group.json";
+$listGroup = new GroupManager($path);
 
-$path = "../user.json";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-$listUser = new \Controller\UserManager($path);
-$username = $_POST['username'];
-$password = $_POST['password'];
-if (empty($username) || empty($password)) {
-    echo "<script type='text/javascript'>alert('login failed! username and password is not empty')</script>";
-} else {
-    $_SESSION['username'] = $username;
-    $listUser->checkLogin($username, $password);
+    $nameGroup = $_POST['nameGroup'];
+    $group = new Group($nameGroup);
+    $listGroup->add($group);
 }
 
-}
+$groups = $listGroup->getList();
+
 
 ?>
 <!doctype html>
@@ -35,22 +31,20 @@ if (empty($username) || empty($password)) {
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../index.php">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Dropdown
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -73,20 +67,47 @@ if (empty($username) || empty($password)) {
 
     <form method="post">
         <div class="form-group">
-            <label>Username</label>
-            <input type="text" class="form-control" name="username">
+            <label>Group</label>
+            <input type="text" class="form-control" name="nameGroup">
         </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" name="password">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-outline-primary"><a href="register.php">Create</a></button>
 
+        <button type="submit" class="btn btn-primary">Creat Group</button>
     </form>
+    <div class="col-12 col-md-12">
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name Group</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($groups as $key => $group): ?>
+                <tr>
+                    <th scope="row"><?php echo $key + 1 ?></th>
+                    <td><?php echo $group->nameGroup ?></td>
+                    <td><a href="deleteGroup.php?index=<?php echo $key ?>"
+                           onclick="return confirm('Ban chac chan muon xoa khong')" class="btn btn-danger">Delete</a></td>
+                    <td><a href="editAGroup.php?index=<?php echo $key ?>" class="btn btn-primary">Edit</a></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
 
 </div>
+
+
+
+
+
+</div>
+
+
+
 
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

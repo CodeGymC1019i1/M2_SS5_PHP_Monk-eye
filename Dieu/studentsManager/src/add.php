@@ -2,14 +2,20 @@
 
 use Controller\Student;
 use Controller\StudentManager;
-
+use Controller\Group;
+use Controller\GroupManager;
+include_once "../class/Group.php";
+include_once "../class/GroupManager.php";
+$path = "../group.json";
+$listGroup = new GroupManager($path);
+$groups = $listGroup->getList();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     include_once "../class/Student.php";
     include_once "../class/StudentManager.php";
 
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+
+
     $name = $_POST['name'];
     $age = $_POST['age'];
     $address = $_POST['address'];
@@ -17,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $pathFile = "../data.json";
 
-    $student = new Student($username,$password,$name, $age, $address, $group);
+    $student = new Student($name, $age, $address, $group);
     $studentManager  = new StudentManager($pathFile);
     $studentManager->add($student);
 
-    header("Location: login.php");
+    header("Location: ../index.php");
 }
 ?>
 
@@ -46,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="../index.php">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Link</a>
@@ -77,14 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-12">
             <h1>Add new Student</h1>
             <form method="post">
-                <div class="form-group" >
-                    <label >Username</label>
-                    <input type="text" class="form-control" name="username" >
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" name="password">
-                </div>
+
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" class="form-control" name="name">
@@ -100,10 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label>Group</label>
                     <select class="form-control" name="group">
-                        <option value="C0919K1">C0919K1</option>
-                        <option value="C0919I1">C0919I1</option>
-                        <option value="C1019K1">C1019K1</option>
-                        <option value="C1019I1">C1019I1</option>
+                        <?php foreach ($groups as $group): ?>
+                        <option value="<?php echo $group->nameGroup ?>"><?php echo $group->nameGroup ?></option>
+                        <?php endforeach;?>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,25 +1,37 @@
 <?php
-session_start();
+use Controller\Student;
+use Controller\StudentManager;
+use Controller\GroupManager;
+use Controller\Group;
+
 include_once "../class/Student.php";
 include_once "../class/StudentManager.php";
-include_once "../class/User.php";
-include_once "../class/UserManager.php";
+include_once "../class/Group.php";
+include_once "../class/GroupManager.php";
+$path = "../group.json";
+$listGroup = new GroupManager($path);
+$groups = $listGroup->getList();
+$index = (int)$_GET['index'];
+$groupEdit = $groups[$index]->nameGroup;
+$pathFile = "../data.json";
+$studentManager  = new StudentManager($pathFile);
+$students = $studentManager->getList();
+$studentInGroup  = $studentManager->search($groupEdit);
+if ($_SERVER["REQUEST_METHOD"]=="POST"){
+    $nameGroup  = $_POST["nameGroup"];
+    $newGroup = new Group($nameGroup);
+    $listGroup->edit($newGroup,$index);
 
-$path = "../user.json";
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-$listUser = new \Controller\UserManager($path);
-$username = $_POST['username'];
-$password = $_POST['password'];
-if (empty($username) || empty($password)) {
-    echo "<script type='text/javascript'>alert('login failed! username and password is not empty')</script>";
-} else {
-    $_SESSION['username'] = $username;
-    $listUser->checkLogin($username, $password);
-}
-
+    foreach ($students as $student){
+        if ($student->group == $groupEdit )
+            $student->group = $nameGroup;
+    }
+    $studentManager->saveDataToFile($students);
+    header("Location: editGroup.php");
 }
 
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -32,25 +44,24 @@ if (empty($username) || empty($password)) {
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
+
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../index.php">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Dropdown
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -70,22 +81,41 @@ if (empty($username) || empty($password)) {
             </form>
         </div>
     </nav>
-
     <form method="post">
         <div class="form-group">
-            <label>Username</label>
-            <input type="text" class="form-control" name="username">
+            <label>Group</label>
+            <input type="text" class="form-control" name="nameGroup" value="<?php echo $groups[$index]->nameGroup ?>">
         </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" name="password">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-outline-primary"><a href="register.php">Create</a></button>
 
+        <button type="submit" class="btn btn-primary">Edit Group</button>
+
+        <div class="col-12 col-md-12">
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Group</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($studentInGroup as $key => $student): ?>
+                    <tr>
+                        <th scope="row"><?php echo $key + 1 ?></th>
+                        <td><?php echo $student->name ?></td>
+                        <td><?php echo $student->age ?></td>
+                        <td><?php echo $student->address ?></td>
+                        <td><?php echo $student->group ?></td>
+
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </form>
-
-
 </div>
 
 
