@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 use Controller\Student;
 use Controller\StudentManager;
 use Controller\GroupManager;
@@ -13,28 +13,40 @@ $path = "../group.json";
 $listGroup = new GroupManager($path);
 $groups = $listGroup->getList();
 $index = (int)$_GET['index'];
+const MAX_SIZE_FILE = 3072;
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $studentManager  =  new \Controller\StudentManager("../data.json");
+    $studentManager = new \Controller\StudentManager("../data.json");
     $student = $studentManager->findById($index);
+    $_SESSION["oldImage"] = $student->image;
 } else {
-
     $name = $_POST['name'];
     $age = $_POST['age'];
     $address = $_POST['address'];
     $group = $_POST['group'];
-
+    $image = $_FILES['image'];
+    if (!empty($image['name'])) {
+        $sizeFile = $image['size'] / 1024;
+        if ($sizeFile > MAX_SIZE_FILE) {
+            echo "<script> alert('dung luong anh toi da 3MB')</script>";
+        } else {
+            $fileTmp = $image['tmp_name'];
+            $fileName = date("Y_D_M").$image['name'];
+            move_uploaded_file($fileTmp, "../images/" . $fileName);
+            $pathFileUpoad = "images/" . $fileName;
+            unlink("../".$_SESSION["oldImage"]);
+        }
+    } else {
+        $pathFileUpoad = "images/default.png";
+    }
     $pathFile = "../data.json";
-
-    $student = new Student($name, $age, $address, $group);
-    $studentManager  = new StudentManager($pathFile);
+    $student = new Student($name, $age, $address, $group, $pathFileUpoad);
+    $studentManager = new StudentManager($pathFile);
     $studentManager->edit($student, $index);
 
     header("Location: ../index.php");
 
 }
-
-
 
 
 ?>
@@ -48,12 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -66,7 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 <a class="nav-link" href="#">Link</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
                     Dropdown
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -90,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     <div class="row">
         <div class="col-12">
             <h1>Edit Student</h1>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label>Name</label>
@@ -113,8 +128,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                                     selected
                                 <?php endif; ?>
                             ><?php echo $group->nameGroup ?></option>
-                        <?php endforeach;?>
+                        <?php endforeach; ?>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>image</label>
+                    <input type="file" class="form-control-file" name="image"
+                           onchange="document.getElementById('newImg').src = window.URL.createObjectURL(this.files[0])">
+                    <img src="../<?php echo $student->image ?>" class="img-circle" id="newImg" width="100" height="100">
+<!--                    --><?php //unlink("../".$student->image )?>
+
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

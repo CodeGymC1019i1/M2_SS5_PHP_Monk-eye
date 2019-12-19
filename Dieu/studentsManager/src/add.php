@@ -6,24 +6,38 @@ use Controller\Group;
 use Controller\GroupManager;
 include_once "../class/Group.php";
 include_once "../class/GroupManager.php";
+include_once "../class/Student.php";
+include_once "../class/StudentManager.php";
+const MAX_SIZE_FILE = 3072;
+
 $path = "../group.json";
 $listGroup = new GroupManager($path);
 $groups = $listGroup->getList();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    include_once "../class/Student.php";
-    include_once "../class/StudentManager.php";
-
-
-
     $name = $_POST['name'];
     $age = $_POST['age'];
     $address = $_POST['address'];
     $group = $_POST['group'];
+    $image = $_FILES["image"];
+    if(!empty($image['name'])){
+        $sizeFile = $image['size']/1024;
+        if($sizeFile > MAX_SIZE_FILE){
+            echo "<script> alert('dung luong anh toi da 3MB')</script>";
+        } else {
+            $fileTmp = $image['tmp_name'];
+            $fileName = date("Y_D_M").$image['name'];
+            move_uploaded_file($fileTmp, "../images/" . $fileName);
+            $pathFileUpoad = "images/" . $fileName;
+        }
+    }else {
+        $pathFileUpoad = "images/default.png";
+    }
+
 
     $pathFile = "../data.json";
 
-    $student = new Student($name, $age, $address, $group);
+    $student = new Student($name, $age, $address, $group, $pathFileUpoad);
     $studentManager  = new StudentManager($pathFile);
     $studentManager->add($student);
 
@@ -82,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="row">
         <div class="col-12">
             <h1>Add new Student</h1>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label>Name</label>
@@ -103,6 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <option value="<?php echo $group->nameGroup ?>"><?php echo $group->nameGroup ?></option>
                         <?php endforeach;?>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>image</label>
+                    <input type="file" class="form-control-file" name="image">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

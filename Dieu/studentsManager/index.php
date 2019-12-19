@@ -84,7 +84,7 @@ if (isset($_GET["submit"])) {
                     <th scope="col">Age</th>
                     <th scope="col">Address</th>
                     <th scope="col">Group</th>
-                    <th></th>
+                    <th scope="col">Image</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -96,13 +96,14 @@ if (isset($_GET["submit"])) {
                         <td><?php echo $student->age ?></td>
                         <td><?php echo $student->address ?></td>
                         <td><?php echo $student->group ?></td>
+                        <td><img src="<?php echo $student->image ?>" class="img-circle" width="100" height="100"></td>
                         <td><a href="src/delete.php?index=<?php echo $key ?>"
                                onclick="return confirm('Ban chac chan muon xoa khong')" class="btn btn-danger"
-                               <?php if ($_SESSION['username'] != 'admin'): ?>
-                                   hidden
-                               <?php endif ?>
-                            >Delete</a></td>
-                        <td><a href="src/edit.php?index=<?php echo $key ?>" class="btn btn-primary"
+                                <?php if ($_SESSION['username'] != 'admin'): ?>
+                                    hidden
+                                <?php endif ?>
+                            >Delete</a>
+                            <a href="src/edit.php?index=<?php echo $key ?>" class="btn btn-primary"
                                 <?php if ($_SESSION['username'] != 'admin'): ?>
                                     hidden
                                 <?php endif ?>>Edit</a></td>

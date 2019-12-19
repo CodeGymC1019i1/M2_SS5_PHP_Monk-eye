@@ -14,9 +14,10 @@ class StudentManager extends Manager
             'name' => $student->name,
             'age' => $student->age,
             'address' => $student->address,
-            'group' => $student->group
+            'group' => $student->group,
+            'image' =>$student->image
         ];
-        array_push($listStudent, $student);
+        array_push($listStudent, $data);
         $this->saveDataToFile($listStudent);
     }
 
@@ -40,7 +41,8 @@ class StudentManager extends Manager
                                     $item['name'],
                                     $item['age'],
                                     $item['address'],
-                                    $item['group']
+                                    $item['group'],
+                                    $item['image']
             );
 
             array_push($arr, $student);
@@ -57,7 +59,8 @@ class StudentManager extends Manager
                 $data[$index]['name'],
                 $data[$index]['age'],
                 $data[$index]['address'],
-                $data[$index]['group']
+                $data[$index]['group'],
+                $data[$index]['image']
             );
 
             return $student;
@@ -71,7 +74,8 @@ class StudentManager extends Manager
             'name' => $student->name,
             'age' => $student->age,
             'address' => $student->address,
-            'group' => $student->group
+            'group' => $student->group,
+            'image' =>$student->image
         ];
 
         $listStudent[$index] = $data;
